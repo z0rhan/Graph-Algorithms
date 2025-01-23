@@ -4,82 +4,120 @@ of vertices of the set B that can appear on a shortest path from s to u?"""
 
 from graph import Graph
 from collections import deque
+import sys
 
-def BFS(graphObject, startVertex, endVertex):
-    queue = deque([startVertex])
-    visited = set()
-    distance = {startVertex: 0}
+# function to conduct BFS
+def BFS(graphObject, startVertex, endVertex, verticesSet):
+    queue = deque([startVertex])  # queue to store the vertices
+    visited = set()  # set to store the visited vertices
+    if startVertex in verticesSet:
+        verticesCount = {startVertex: 1}
+    else:
+        verticesCount = {startVertex: 0}
 
+    print(verticesCount)
+
+    # run until the queue is empty
     while queue:
+        # remove the current vertex from the queue
         currentVertex = queue.popleft()
+        # add the vertex to the visited set
         visited.add(currentVertex)
 
-        if currentVertex == endVertex:
-            return distance[currentVertex]
-
+        # visit the neighbours of the current vertex
         for neighbour in graphObject.getEdges()[currentVertex]:
-            if neighbour not in visited:
+            # add the neighbour to the queue if not visited
+            if neighbour in verticesSet and neighbour not in visited:
                 visited.add(neighbour)
-                distance[neighbour] = distance[currentVertex] + 1
+                # update the distance
+                verticesCount[neighbour] = verticesCount[currentVertex] + 1
+                if neighbour == endVertex:
+                    break
                 queue.append(neighbour)
 
-    return distance[endVertex]
+            if neighbour not in verticesSet and neighbour == endVertex:
+                verticesCount[neighbour] = verticesCount[currentVertex]
 
-def getSet():
-    verticesSet = set()
-    vertices = input("Enter the vertices in the set separated by commas(x,y,z,...): ")
-    verticesList = vertices.split(',')
+    return verticesCount.get(endVertex, None)
 
-    for vertex in verticesList:
-        if not vertex.isdigit():
-            print("Invalid input")
-            return None
+def readPairFile(filename):
+    pairs = []
 
-    for vertex in verticesList:
-        verticesSet.add(int(vertex))
+    with open(filename, "r") as fileObj:
+        for line in fileObj:
+            if line:
+                pairs = line.strip().split(' ')
+                if len(pairs) != 2:
+                    print("Invalid input in file")
+                    return None
+    return pairs
 
+def readSetFile(filename, graph):
+    setVertices = set()
 
-def addEdges(graphObject):
-    while True: 
-        edge = input("Enter the edges in the form {u,v}: ")
+    with open(filename, "r") as fileObj:
+        for line in fileObj:
+            vertices = line.strip().split(' ')
+            for vertex in vertices:
+                if int(vertex) > graph.getVerticesnum():
+                    print(f"Vertex {vertex} is not in the graph")
+                    return None
+                setVertices.add(int(vertex))
 
-        splittedEdge = edge.split(',')
+    return setVertices
 
-        if len(splittedEdge) != 2:
-            print("Invalid input")
-            continue
+def readEdgeFile(filename, graph):
 
-        startVertex = splittedEdge[0]
-        endVertex = splittedEdge[1]
+    with open(filename, "r") as fileObj:
 
-        if not startVertex.isdigit() or not endVertex.isdigit():
-            print("Invalid input")
-            continue
+        for line in fileObj:
+            if line:
+                line = line.strip().split(':')
+                if len(line) != 2:
+                    continue
+                fromVertex = line[0].strip()
+                toVertices = line[1].strip().split(' ')
 
-        graphObject.addEdge(int(startVertex), int(endVertex))
+                for vertex in toVertices:
+                    graph.addEdge(int(fromVertex), int(vertex))
 
 
 def main():
-    numOfVertices = int(input("Enter the number of vertices: "))
-    graph = Graph(numOfVertices)
+
+    graph = Graph(0)
 
     while True:
-        command = input("Enter [A]dd to add edges, [F]ind to find the max vertices or [Q]uit to quit: ")
-        if command == "A":
-            addEdges(graph)
+        edgeFileName = input("Enter the file name containing edges: ")
+        try:
+            readEdgeFile(edgeFileName, graph)
+            break
+        except FileNotFoundError:
+            print("File not found. Please enter a valid file name.")
 
-        elif command == "F":
-            startVertex = int(input("Enter the start vertex: "))
-            endVertex = int(input("Enter the end vertex: "))
-            print(BFS(graph, startVertex, endVertex))
+    while True:
+        setFileName = input("Enter the file name containing set: ")
 
-        elif command == "Q":
+        verticesSet = readSetFile(setFileName, graph)
+
+        if verticesSet is not None:
             break
 
-        else:
-            print("Invalid command")
+    while True:
+        pairVertex = input("Enter the file for the pair of vertices: ")
 
-    graph.getEdges()
+        pair = readPairFile(pairVertex)
+
+        if pair is not None:
+            break
+
+    distance = BFS(graph, int(pair[0]), int(pair[1]), verticesSet)
+    graph.printEdges()
+    print(verticesSet)
+
+    if distance is None:
+        print(f"No path between {pair[0]} and {pair[1]}")
+    else:
+        print(f"Maximal vertices on the shortest path between {pair[0]} and {pair[1]} is {distance}")
 
 if __name__ == "__main__":
     main()
