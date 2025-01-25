@@ -4,24 +4,62 @@ of vertices of the set B that can appear on a shortest path from s to u?"""
 
 from graph import Graph
 from collections import deque, defaultdict
-import sys
-
 
 def BFS_shortest_paths(graphObj, startVertex, endVertex):
+    distances = {vertex: float('inf') for vertex in graphObj.adjacencyList}
+    distances[startVertex] = 0
+
+    # Dictionary to store the predecessors of each vertex (for reconstructing paths)
+    parents = defaultdict(list)
+
+    # Queue for BFS (Breadth-First Search)
+    queue = deque([startVertex])
+
+    while queue:
+        current_vertex = queue.popleft()
+
+        # Check neighbors of the current vertex
+        for neighbor in graphObj.adjacencyList[current_vertex]:
+            if distances[neighbor] == float('inf'):
+                distances[neighbor] = distances[current_vertex] + 1
+                queue.append(neighbor)
+
+            # If we find a shorter path, update the predecessor list
+            if distances[neighbor] == distances[current_vertex] + 1:
+                parents[neighbor].append(current_vertex)
+
+    # If the target is unreachable, return an empty list
+    if distances[endVertex] == float('inf'):
+        return []
+
+    all_paths = []
+
+    def reconstruct_paths(current_vertex, path):
+        if current_vertex == startVertex:
+            all_paths.append([startVertex] + path[::-1])
+            return
+        for parent in parents[current_vertex]:
+            reconstruct_paths(parent, path + [current_vertex])
+
+    reconstruct_paths(endVertex, [])
+
+    return all_paths
+
+
 
 def maximalVertices(paths, verticesSet):
-    count = 0
     maximalVertex = 0
+    print(paths)
+
     for path in paths:
+        count = 0
         for i in path:
-            count += i
+            if i in verticesSet:
+                count += 1
         if count > maximalVertex:
             maximalVertex = count
 
     return maximalVertex
-
-
-# function to conduct BFS
 
 
 def readPairFile(filename):
@@ -70,38 +108,42 @@ def readEdgeFile(filename, graph):
 
 def main():
 
-    graph = Graph(0)
+    graph = Graph()
 
     while True:
-        # edgeFileName = input("Enter the file name containing edges: ")
+        edgeFileName = input("Enter the file name containing edges: ")
         try:
-            readEdgeFile("testgraph_1", graph)
+            readEdgeFile(edgeFileName, graph)
             break
         except FileNotFoundError:
             print("File not found. Please enter a valid file name.")
 
     while True:
-        # setFileName = input("Enter the file name containing set: ")
+        setFileName = input("Enter the file name containing set: ")
 
-        verticesSet = readSetFile("testset_1", graph)
+        verticesSet = readSetFile(setFileName, graph)
 
         if verticesSet is not None:
             break
+        else:
+            return
 
     while True:
-        # pairVertex = input("Enter the file for the pair of vertices: ")
+        pairVertex = input("Enter the file for the pair of vertices: ")
 
-        pair = readPairFile("testpair_1")
+        pair = readPairFile(pairVertex)
 
         if pair is not None:
             break
+        else:
+            return
 
-    shortestPahts = BFS_shortest_paths(graph, int(pair[0]), int(pair[1]))
-    maxVertices = maximalVertices(shortestPahts, verticesSet)
+    shortestPaths = BFS_shortest_paths(graph, int(pair[0]), int(pair[1]))
+    maxVertices = maximalVertices(shortestPaths, verticesSet)
 
     print(
-        f"Maximal vertices on the shortest path between {
-          pair[0]} and {pair[1]} is {maxVertices}"
+        f"Maximum number of vertices in the set B that can appear on a shortest path from {
+          pair[0]} to {pair[1]} is {maxVertices}"
     )
 
 
