@@ -1,6 +1,6 @@
-# class to implement a graph
 from collections import defaultdict
 
+# class to implement a graph
 class Graph:
     def __init__(self):
         self.adjacencyList = defaultdict(list)
@@ -20,7 +20,8 @@ class Graph:
 
         if weight is not None:
             self.weights[(from_vertex,to_vertex)] = weight
-
+        
+        # update the number of vertices
         self.vertices = len(self.adjacencyList)
 
     def printEdges(self):
