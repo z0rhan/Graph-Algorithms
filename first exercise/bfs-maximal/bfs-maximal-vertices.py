@@ -146,17 +146,23 @@ def main():
             print("File not found. Please enter a valid file name.")
 
     while True:
-        setFileName = input("Enter the file name containing set: ")
+        setFileName = input("Enter the file name containing set or leave empty for empty set: ")
 
-        try:
-            verticesSet = readSetFile(setFileName, graph)
-        except FileNotFoundError:
-            print("File not found. Please enter a valid file name.")
-
-        if verticesSet is not None:
+        # if the file is empty, make an empty set
+        if setFileName == "":
+            verticesSet = []
             break
+
         else:
-            return
+            try:
+                verticesSet = readSetFile(setFileName, graph)
+            except FileNotFoundError:
+                print("File not found. Please enter a valid file name.")
+
+            if verticesSet is not None:
+                break
+            else:
+                return
 
     while True:
         pairVertex = input("Enter the file for the pair of vertices: ")

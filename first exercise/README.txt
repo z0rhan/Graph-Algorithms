@@ -11,12 +11,9 @@ I'm adding this here because for the three test cases it says a single vertex be
 so please write the pair as "1 1" as it means from 1 to 1 here.
 ->"1 1" if you want to find a path from 1 to 1
 
-Also, for the edges, write as "1: 1" as the graph is empty until edges are added to it and "1: " gives error 
-->"1: 1" for vertex with no directed edge
+Also, I have not handled the code to add a vertex with wihtout edges as the edges are stored in a dictionary.
 
-For the set, if you want a empty set the just write 0 in the file as the vertices start from 1 and I did not have enough time to handle 
-the case where the file is empty
-->"0" for an empty set
+For the set, if you want a empty set, then just leave the file name empty. 
 
 I'm sorry for all this but I had very little time to take care of small details like this. 
 Eventually, I'll take care of this and update them on my github but I can't finish them before the deadline

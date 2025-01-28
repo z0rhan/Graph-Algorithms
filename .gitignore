@@ -1,5 +1,8 @@
+# python cache
 __pycache__/
 
+# test files
 test*
 
+# homework file
 *.zip 
