@@ -11,12 +11,9 @@ The format are;
 ---------------------------------------------------------IMPORTANT---------------------------------------------------------------------------
 ->"1 1" if you want to find a path from 1 to 1
 
-->the code assumes that every vertex has outdegree at least 1. This has to do something with the graph being stored in a dictionary. 
-I need to initialize the vertex with an empty list if it has no outdegree (Not the point of this exercise).
-
 ->For the set, if you want a empty set, then just leave the file name empty. 
 
-I'll try to fix for the second point if I get some time.
+I'll try to fix for the second point if I get some time. -> https://github.com/z0rhan/Graph-Algorithms
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 The package provided will likely be a zip file. You can unzip it and it will have following files:

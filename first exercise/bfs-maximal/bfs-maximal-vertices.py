@@ -37,18 +37,18 @@ def BFS_ShortestPaths(graphObj, startVertex, endVertex):
         return None
 
     allPaths = [] # To store all possible shortest paths
-    
+
     # To reconstruct the shortest paths available 
     def reconstructPaths(currentVertex, path):
         # If reached the starting vertex add it to the start of the path
         if currentVertex == startVertex:
             allPaths.append([startVertex] + path)
             return # End the function
-        
+
         # Continue adding the parent to the path from the endVertex recursively
         for parent in parents[currentVertex]:
             reconstructPaths(parent, [currentVertex] + path)
-    
+
     # Function call to reconstruct path starting from the end vertex
     reconstructPaths(endVertex, [])
 
@@ -112,26 +112,6 @@ def readSetFile(filename, graph):
     return setVertices
 
 
-def readEdgeFile(filename, graph):
-    """
-    reades file the contains all possible edges and adds them 
-    to the graph object provided
-    """
-    with open(filename, "r") as fileObj:
-
-        for line in fileObj:
-            if line:
-                line = line.strip().split(":")
-                if len(line) != 2:
-                    continue
-
-                fromVertex = line[0].strip()
-                toVertices = line[1].strip().split(" ")
-
-                for vertex in toVertices:
-                    graph.addEdge(int(fromVertex), int(vertex))
-
-
 def main():
     # initialize a graph object
     graph = Graph()
@@ -140,7 +120,7 @@ def main():
         edgeFileName = input("Enter the file name containing edges: ")
 
         try:
-            readEdgeFile(edgeFileName, graph)
+            graph.readGraph(edgeFileName)
             break
         except FileNotFoundError:
             print("File not found. Please enter a valid file name.")
@@ -176,14 +156,14 @@ def main():
             break
         else:
             return
-    
+
     shortestPaths = BFS_ShortestPaths(graph, int(pair[0]), int(pair[1]))
 
     if shortestPaths is None:
         print("Target vertex unreachable!!!")
 
     print(f"All possible shortest paths: {shortestPaths}")
-    
+
     maxVertices = maximalVertices(shortestPaths, verticesSet)
 
     print(
