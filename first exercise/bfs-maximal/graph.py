@@ -14,7 +14,7 @@ class Graph:
         self.verticesNum = vertices
 
     def getVerticesnum(self):
-        return self.vertices
+        return self.verticesNum
 
     def getEdges(self):
         return self.adjacencyList
@@ -23,11 +23,11 @@ class Graph:
     def addEdge(self, from_vertex, to_vertex, weight=None):
 
         current_v_num = len(self.adjacencyList)
-        self.verticesNum = from_vertex
+        newVertex = from_vertex
 
         # add new edges if required
-        if self.verticesNum > current_v_num:
-            newVertices = {i: [] for i in range(current_v_num+1, self.verticesNum+1)}
+        if newVertex > current_v_num:
+            newVertices = {i: [] for i in range(current_v_num+1, newVertex+1)}
             self.adjacencyList.update(newVertices)
 
         if to_vertex not in self.adjacencyList[from_vertex]:
@@ -37,9 +37,10 @@ class Graph:
             self.weights[(from_vertex, to_vertex)] = weight
 
         # update the number of vertices
-        self.vertices = len(self.adjacencyList)
+        self.verticesNum = max(self.adjacencyList)
 
     # Read the file containing the data of the graph
+    # SEPERATOR = " "
     #
     # Without weights, the number after ":" represent the adjacent vertices of 1
     # 1: 2 3 4
@@ -47,16 +48,20 @@ class Graph:
     # With weights, the number after "," represent the weight
     # associated for edge (1,2)
     # 1: (2,1) (3,2) (4,5)
-
     def readGraph(self, filename):
 
         with open(filename) as file_object:
+            lineCount = 0
+
             for line in file_object:
+                lineCount += 1
+
                 if line.strip() == "":
-                    print("Empty line here in file...")
+                    print(f"Presence of empty line in line {lineCount}!!!\n")
                     continue
 
                 splittedLine = line.strip().split(":")
+
                 if len(splittedLine) != 2:
                     print("Error in format of file!!!")
                     return
@@ -68,15 +73,35 @@ class Graph:
                 splittedEdge = edges.strip().split(" ")
 
                 for edge in splittedEdge:
+                    # if weight is given
                     try:
                         e, w = edge.split(',')
                         edgefinal = e.strip('(')
                         weight = w.strip(')')
                         self.addEdge(int(from_vertex), int(edgefinal), int(weight))
 
-                    except:
-                        self.addEdge(int(from_vertex), int(edge.strip()))
+                    # if no weight is given
+                    except ValueError:
+                        if self.verticesNum is None:
+                            self.verticesNum = 0
 
+                        if int(from_vertex) > self.verticesNum and len(edges) == 0:
+                            self.adjacencyList[int(from_vertex)] = []
+                            continue
+                        self.adjacencyList[int(from_vertex)].append(int(edge))
+
+                        self.verticesNum = max(self.adjacencyList)
+
+    def getInDegree(self, vertex):
+        degree = 0
+        for edge in self.adjacencyList:
+            if vertex in self.adjacencyList[edge]:
+                degree += 1
+
+        return degree
+
+    def getOutDegree(self, vertex):
+        return len(self.adjacencyList[vertex])
 
 
     def printEdges(self):
@@ -87,6 +112,8 @@ class Graph:
 
         for edge in self.adjacencyList:
             print(f"{edge} :{self.adjacencyList[edge]}")
+
+        print()
 
         if len(self.weights) != 0:
             print(f"Weights associated with the edges:")

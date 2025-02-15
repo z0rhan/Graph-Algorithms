@@ -14,7 +14,9 @@ def main():
         except FileNotFoundError:
             print("Give a valid file name!!!")
 
+    graph.printEdges()
     network = FlowNetwork(graph)
+    network.print()
     maxFlow, _ = network.FordFulkerson()
     minCut = network.findMinCut()
 

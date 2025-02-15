@@ -11,7 +11,11 @@ class Graph:
             self.adjacencyList = defaultdict(list)
 
         self.weights = {}
-        self.verticesNum = vertices
+
+        if vertices is None:
+            self.verticesNum = 0
+        else:
+            self.verticesNum = vertices
 
     def getVerticesnum(self):
         return self.verticesNum
@@ -81,8 +85,16 @@ class Graph:
                         self.addEdge(int(from_vertex), int(edgefinal), int(weight))
 
                     # if no weight is given
-                    except:
-                        self.addEdge(int(from_vertex), int(edge.strip()))
+                    except ValueError:
+
+                        if int(from_vertex) > self.verticesNum and len(edges) == 0:
+                            self.adjacencyList[int(from_vertex)] = []
+                            self.verticesNum = max(self.adjacencyList)
+                            continue
+
+                        self.adjacencyList[int(from_vertex)].append(int(edge))
+
+                        self.verticesNum = max(self.adjacencyList)
 
     def getInDegree(self, vertex):
         degree = 0
